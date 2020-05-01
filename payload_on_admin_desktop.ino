@@ -163,7 +163,7 @@ void setup()
 
   // Delete chrome windows if exists and the history file and starting the shortcut
 
-  Keyboard.print(F("TSKILL chrome "/* ADD & start test.lnk*/);
+  Keyboard.print(F("TSKILL chrome "/* ADD & start test.lnk*/));
 
   typeKey(KEY_RETURN);
 
